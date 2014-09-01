@@ -2,6 +2,7 @@ package markovchain.ui;
 
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingGraphMousePlugin;
@@ -18,6 +19,7 @@ public class CustomMousePlugin<V, E> extends EditingGraphMousePlugin<V, E> {
     protected V vertex;
     protected E edge;
     protected double offsetx;
+    private DesignTask design = new DesignTask();//call the constructor to delete permission
     /**
      * the y distance from the picked vertex center to the mouse point
      */
@@ -32,10 +34,29 @@ public class CustomMousePlugin<V, E> extends EditingGraphMousePlugin<V, E> {
     @Override
     public void mousePressed(MouseEvent e) {
         // TODO Auto-generated method stub
-        if (e.isControlDown()) {
+    	 VisualizationViewer<V, E> vv = (VisualizationViewer) e.getSource();
+         GraphElementAccessor<V, E> pickSupport = vv.getPickSupport();
+         final VisualizationViewer<V, E> vv1 = (VisualizationViewer<V, E>) e.getSource();
+         final Graph<V, E> graph = vv.getGraphLayout().getGraph();
+         Point2D p = e.getPoint();
+         //Delete Vertex and edge with button delete
+    	if(design.geDel()){
+    		if(pickSupport!=null){
+    			final V vertex = pickSupport.getVertex(vv.getGraphLayout(), p.getX(), p.getY());
+                final E edge = pickSupport.getEdge(vv.getGraphLayout(), p.getX(), p.getY());
+                if(vertex!=null){
+                	  graph.removeVertex(vertex);
+                      vv.repaint();
+                }
+                else if(edge !=null){
+                	  graph.removeEdge(edge);
+                      vv.repaint();
+                }
+    		}
+    	}
+    	else  if (e.isControlDown()) {
             down = e.getPoint();
-            VisualizationViewer<V, E> vv = (VisualizationViewer) e.getSource();
-            GraphElementAccessor<V, E> pickSupport = vv.getPickSupport();
+           
             PickedState<V> pickedVertexState = vv.getPickedVertexState();
 //            PickedState<E> pickedEdgeState = vv.getPickedEdgeState();
             if (pickSupport != null && pickedVertexState != null) {

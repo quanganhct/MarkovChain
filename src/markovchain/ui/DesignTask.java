@@ -1,5 +1,6 @@
 package markovchain.ui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -45,13 +46,26 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
     private JSlider jsEdgeOffset;
     private JComboBox cboLayouts;
     private JCommandButton btnCircle;
+    private JCommandButton btnDelete;
+    private static boolean  canDel;//Permission to delete when clicked delete button
+    private int delCount =0;//Count the number of clicking button delete
+    private  JRibbonBand bandDelete; // Make this band global for change color when clicked
 //    private JCommandButton btnSimulator;
 
     public DesignTask(IDesignController controller) {
         this.controller = controller;
         initialize();
     }
-
+    public DesignTask(){}//constructor for use set get
+    //Delelte permission set and get
+    public void setDel(boolean c)
+    {
+    	canDel=c;
+    }
+    public boolean geDel()
+    {
+    	return canDel;
+    }
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
@@ -61,7 +75,18 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
             controller.zoomOut();
         } else if (src == btnCircle) {
             controller.setCircleLayout();
-        } else if (src instanceof AbstractButton) {
+        } else if(src== btnDelete){ // handle the delete button
+        	bandDelete.setBackground(Color.ORANGE);
+        	setDel(true);
+        	delCount++;
+        	if(delCount >1){
+        		setDel(false);
+        		delCount=0;
+        		bandDelete.setBackground(Color.WHITE);
+        	}
+        	
+        }
+          else if (src instanceof AbstractButton) {
             AbstractButton source = (AbstractButton) e.getSource();
             if (source == btnLine) {
                 if (source.isSelected()) {
@@ -86,7 +111,8 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
                 if (source.isSelected()) {
                     controller.setEdgeShape(new EdgeShape.CubicCurve<Vertex, Edge>());
                 }
-            } else if (source == chkVetexLabel) {
+            } 
+            else if (source == chkVetexLabel) {
                 controller.setVertexVisible(source.isSelected());
             } else if (source == chkEdgeLabel) {
                 controller.setEdgeVisible(source.isSelected());
@@ -156,7 +182,13 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
         bandArrowLabel.addRibbonComponent(createComponent(chkArrowCentered));
         bandArrowLabel.addRibbonComponent(createComponent(chkBoldLabel));
         setResizePolicies(bandArrowLabel);
+        //Band Delete 
+        bandDelete = createRibbonBand("Delete", "delete.png");
 
+        btnDelete = createCommandButton("Delete", "delete.png");
+        bandDelete.addCommandButton(btnDelete, RibbonElementPriority.TOP);
+       
+        setResizePolicies(bandDelete);
         // Band Zoom
         JRibbonBand bandZoom = createRibbonBand("Zoom", "zoom-in.png");
 
@@ -238,7 +270,7 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
 //        setResizePolicies(bandSimulation);
 
         // create task
-        AbstractRibbonBand[] bands = createBands(bandMode, bandLayout, bandEdgeShape,
+        AbstractRibbonBand[] bands = createBands(bandMode, bandLayout,bandDelete, bandEdgeShape,
                 bandArrowLabel, bandZoom, bandSize);
         task = new RibbonTask("Design", bands);
 
@@ -251,6 +283,7 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
         btnZoomIn.addActionListener(this);
         btnZoomOut.addActionListener(this);
         btnCircle.addActionListener(this);
+        btnDelete.addActionListener(this);
 
         jsVertexSize.addChangeListener(this);
         jsEdgeOffset.addChangeListener(this);
@@ -261,6 +294,7 @@ public final class DesignTask extends AbstractTaskView implements ActionListener
         btnOrthogonal.addActionListener(this);
         btnWedge.addActionListener(this);
         btnCubicCurve.addActionListener(this);
+       
 
         chkVetexLabel.addActionListener(this);
         chkEdgeLabel.addActionListener(this);
