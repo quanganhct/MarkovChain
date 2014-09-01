@@ -12,6 +12,9 @@ public interface IAppMenuController {
     void save();
 
     void load();
+    
+    void gallery();
+    void saveGallery();
 
     void saveAs();
 }

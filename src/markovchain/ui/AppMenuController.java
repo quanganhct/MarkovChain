@@ -1,5 +1,9 @@
 package markovchain.ui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.transform.TransformerException;
+
 /**
  *
  * @author Admin
@@ -34,6 +38,25 @@ public class AppMenuController implements IAppMenuController {
     public void load() {
         if (confirm()) {
             model.loadGraph();
+        }
+    }
+    
+    @Override
+    public void gallery() {
+        if (confirm()) {
+            try {
+                model.loadGallery();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AppMenuController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (TransformerException ex) {
+                Logger.getLogger(AppMenuController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    @Override
+    public void saveGallery() {
+        if (confirm()) {
+            model.saveGallery();
         }
     }
 

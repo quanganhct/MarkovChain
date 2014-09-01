@@ -19,21 +19,33 @@ import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.AbstractEdgeShapeTransformer;
 import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.layout.LayoutTransition;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.BasicEdgeArrowRenderingSupport;
 import edu.uci.ics.jung.visualization.renderers.CenterEdgeArrowRenderingSupport;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import edu.uci.ics.jung.visualization.util.Animator;
 
+
+
 import java.awt.Paint;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import static java.util.UUID.randomUUID;
+import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 
 public class GraphEditor extends JApplet {
@@ -100,11 +112,40 @@ public class GraphEditor extends JApplet {
     public VisualizationViewer getVisualizationViewer() {
         return vv;
     }
-
+    
+    
     public CustomModalGraphMouse<Vertex, Edge> getMyModalGraphMouse() {
         return gm;
     }
+    
+    public String createImageGraph(McGraph graph){
+        
+                    UUID uuid = randomUUID(); 
+                    String path = "src/gallery/"+uuid.toString()+".txt";
+                    VisualizationViewer vv = getVisualizationViewer();
+                    VisualizationImageServer<Vertex, Edge> vis =
+                    new VisualizationImageServer<Vertex, Edge>(vv.getGraphLayout(),
+                        vv.getGraphLayout().getSize());
 
+                vis.setBackground(Color.WHITE);
+                vis.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<Edge>());
+                vis.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<Vertex, Edge>());
+                vis.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Vertex>());
+                vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+                
+                Dimension d = new Dimension(750, 750);
+                BufferedImage image = (BufferedImage) vis.getImage(
+                        new Point2D.Double(vv.getGraphLayout().getSize().getWidth()/2,
+                                vv.getGraphLayout().getSize().getHeight()/2),
+                        d);
+                //new Dimension(vv.getGraphLayout().getSize())
+                try {
+                         ImageIO.write(image, "png", new File("src/gallery/"+uuid.toString()+".png"));
+                }catch (IOException e) {}
+                
+             return uuid.toString();
+    }
+    
     class VertexFactory implements Factory<Vertex> {
 
         int i = 0;

@@ -3,6 +3,8 @@ package markovchain.ui;
 import edu.princeton.cs.introcs.In;
 import edu.princeton.cs.introcs.Out;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -193,6 +195,8 @@ public class McGraph extends DirectedSparseGraph<Vertex, Edge> {
         }
         return graph;
     }
+    
+    
 
     public static double[][] createAdjMatrix(McGraph graph) {
         return createAdjMatrix(graph, graph.createIndexVertexMap());

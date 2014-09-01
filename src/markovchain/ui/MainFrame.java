@@ -1,19 +1,36 @@
 package markovchain.ui;
 
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import static java.util.UUID.randomUUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.transform.TransformerException;
 import org.noos.xing.mydoggy.ContentManager;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowManager;
@@ -29,6 +46,7 @@ public class MainFrame extends JRibbonFrame {
     RibbonTask designRibbonTask;
     RibbonTask simRibonTask;
     JRibbon ribbon;
+    GalleryFile f ;
     SimulationController simController;
     DesignController designController;
     AppMenuController appMenuController;
@@ -36,12 +54,21 @@ public class MainFrame extends JRibbonFrame {
     ToolWindowManager toolWindowManager;
     JDialog dlgWaiting;
     private String currentFilePath = null;
+    public List<GalleryComponent> listJlabelGallery =  new ArrayList<>();
 
     public MainFrame() throws HeadlessException {
         setApplicationIcon(AbstractTaskView.getResizableIconFromResource("app2.png"));
         setTitle("Markov Chain Simulation");
         setPreferredSize(new Dimension(800, 600));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        new Thread(new Runnable() {
+            @Override public void run() {
+
+                    preLoadGallery();
+               
+            }
+        }).start();
+      
         initialize();
 
 
@@ -58,7 +85,9 @@ public class MainFrame extends JRibbonFrame {
     public String showInputDialog(String message) {
         return JOptionPane.showInputDialog(this, message, "Input", JOptionPane.WARNING_MESSAGE);
     }
-
+    
+    
+    
     public boolean confirmStopSimulationMode() {
         int rs = JOptionPane.showConfirmDialog(this, "The simulation process is running. Are you sure you want to stop this process?",
                 "Notice",
@@ -121,6 +150,54 @@ public class MainFrame extends JRibbonFrame {
             }
         }
     }
+    
+    public void saveGallery() {
+            try {
+                String name = showSaveNameDialog();
+                if (name != null) {
+                    UUID uuid = randomUUID(); 
+                    String path = "src/gallery/"+graphEditor.createImageGraph(graphEditor.graph)+".txt";
+                    graphEditor.setCircleLayout();
+                    String link = graphEditor.createImageGraph(graphEditor.graph)+".png";
+                    boolean rs = McGraph.save(graphEditor.graph, path);
+                    
+                         GalleryComponent compG = new GalleryComponent(link, path,name);
+                         listJlabelGallery.add(compG);
+                        
+                        
+
+                    if (rs) {
+                        f.addXML(name,link,path);
+                         preLoadGallery();
+                         try {
+                                Thread.sleep(500);                 
+                            } catch(InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                            }
+                        showDialog("Save successfully");
+                         preLoadGallery();
+                        new Thread(new Runnable() {
+                            @Override public void run() {
+                                    preLoadGallery();
+                            }
+                        }).start();
+                        try {
+                                Thread.sleep(500);                 
+                            } catch(InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                            }
+                    } else {
+                        showErrorDialog("Save fail");
+                    }
+                    
+                }else{
+                     showErrorDialog("Save fail: No name");
+                }
+                
+            } catch (Exception e) {
+                showErrorDialog(e.getMessage());
+            }
+    }
 
     public boolean saveGraphAs() {
         try {
@@ -157,7 +234,48 @@ public class MainFrame extends JRibbonFrame {
             showErrorDialog("Invalid file format");
         }
     }
-
+    // Debut Load Gallery //
+    public void loadGallery() throws InterruptedException, TransformerException {
+               GalleryDialog g = new GalleryDialog(this);
+               List<String> result = g.getResult();
+               System.out.println(currentFilePath);
+               if(result.get(0) == "open"){
+                    McGraph graph = McGraph.load(result.get(1));
+                    if (graph != null) {
+                        currentFilePath = result.get(1);
+                        graphEditor.graph = graph;
+                        designController.setCircleLayout();
+                    } 
+               }else if(result.get(0) == "delete"){
+                   if(currentFilePath == result.get(1)){
+                       currentFilePath=null;
+                   }
+                   f.removeXML(result.get(1));
+                   preLoadGallery();
+               }
+                     
+               //JDialog dialog = new JDialog(this,rootPaneCheckingEnabled);
+               //dialog.setSize(600, 500);
+               //dialog.setMinimumSize(new Dimension(600, 500));
+               //dialog.add(g.GetGallery());
+               
+              
+               //dialog.setVisible(rootPaneCheckingEnabled);
+               //dialog.add(g.GetGallery());
+    
+    }
+    
+    public void preLoadGallery(){
+        
+        f = new GalleryFile();
+        f.loadXML();
+        listJlabelGallery=f.getArray();
+        System.out.println("Numb:"+listJlabelGallery.size());        
+        
+               
+    }
+    // Fin Load Gallery //
+    
     public void exit() {
         if (hasUnSavedGraph()) {
             int rs = JOptionPane.showConfirmDialog(this, "Do you want to save changes?",
@@ -181,6 +299,14 @@ public class MainFrame extends JRibbonFrame {
         int code = chooser.showSaveDialog(this);
         if (code == JFileChooser.APPROVE_OPTION) {
             return getPath(chooser);
+        }
+        return null;
+    }
+    
+    public String showSaveNameDialog() {
+        String s = JOptionPane.showInputDialog("Enter the name of the Example");
+        if (s != "") {
+            return s;
         }
         return null;
     }
@@ -245,6 +371,7 @@ public class MainFrame extends JRibbonFrame {
                 RibbonTask oldTask = (RibbonTask) pce.getOldValue();
                 RibbonTask newTask = (RibbonTask) pce.getNewValue();
                 //resultView.setVisible(newTask == simRibonTask);
+                System.out.println("Change select");
                 activeResultView(newTask == simRibonTask);
                 if (oldTask == simRibonTask && simController.isRunning) {
                     ribbon.setSelectedTask(simRibonTask);
@@ -274,6 +401,23 @@ public class MainFrame extends JRibbonFrame {
                 appMenuController.save();
             }
         });
+        // Debut Action pour la gallery
+        addTaskbar("open_gallery.png", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                System.out.println("Bouton gallery");
+               appMenuController.gallery();
+                
+            }
+        });
+        addTaskbar("save32_gallery.png", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                appMenuController.saveGallery();
+            }
+        });
+        // Fin Action pour la gallery
+        
         MyDoggyToolWindowManager windowManager = new MyDoggyToolWindowManager();
         toolWindowManager = windowManager;
         ContentManager contentManager = toolWindowManager.getContentManager();
