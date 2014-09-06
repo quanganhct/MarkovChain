@@ -14,6 +14,7 @@ public class SCC {
 	private final MCTransition transitions;
 	private final int[] vertices;
 	private boolean isDeadEnd;
+        private boolean isReachable = false;
 
 	/**
 	 * The constructor of {@link SCC} class.
