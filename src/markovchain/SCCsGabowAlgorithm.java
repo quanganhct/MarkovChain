@@ -51,6 +51,9 @@ class SCCsGabowAlgorithm implements SCCsAlgorithm {
 				algorithm.sccs.add(scc);
 			}
 		}
+                
+                algorithm.resetState();
+                algorithm.checkReachableSCC(0);
 		return algorithm.sccs;
 	}
 
@@ -144,4 +147,15 @@ class SCCsGabowAlgorithm implements SCCsAlgorithm {
 		return false;
 	}
 
+        private void checkReachableSCC(int id) {
+            if (!beingVisited[id] && !visited[id]) {
+			beingVisited[id] = true;
+			int[] adjacencies = transition.getAdjacencies(id);
+			if (adjacencies != null)
+				for (int i = 0; i < adjacencies.length; i++)
+					checkReachableSCC(adjacencies[i]);
+			visited[id] = true;
+                        sccs.get(sccVector[id] - 1).setReachable(true);
+		}
+        }
 }

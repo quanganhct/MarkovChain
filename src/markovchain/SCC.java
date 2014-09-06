@@ -88,4 +88,18 @@ public class SCC {
 		return isDeadEnd;
 	}
 
+    /**
+     * @return the isReachable
+     */
+    public boolean isReachable() {
+        return isReachable;
+    }
+
+    /**
+     * @param isReachable the isReachable to set
+     */
+    public void setReachable(boolean isReachable) {
+        this.isReachable = isReachable;
+    }
+
 }
