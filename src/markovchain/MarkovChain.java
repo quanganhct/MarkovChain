@@ -266,7 +266,7 @@ public class MarkovChain {
         sccs = sccAlgorithm.SCCsDecompostion(transitions);
         int sccNum = 0;
         for (SCC scc : sccs) {
-            if (scc.isDeadEnd()) {
+            if (scc.isDeadEnd() && scc.isReachable()) {
                 sccNum++;
             }
         }
@@ -278,7 +278,7 @@ public class MarkovChain {
         }
         int i = 0;
         for (SCC scc : sccs) {
-            if (scc.isDeadEnd()) {
+            if (scc.isDeadEnd() && scc.isReachable()) {
                 double[] sd = null;
                 try {
                     sd = sdMethod.solve(scc.transitions());

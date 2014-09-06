@@ -135,7 +135,7 @@ public class Utilities {
                 sb.append(String.format("+ Stationary distribution %d:\n", i + 1));
                 for (int j = 0; j < data[0].length; j++) {
                     sb.append(" [");
-                    sb.append(String.format("%f5]", data[i][j]));
+                    sb.append(String.format("%1.7f]", data[i][j]));
                 }
                 sb.append("\n");
             }
