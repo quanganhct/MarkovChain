@@ -10,6 +10,8 @@ import java.awt.event.ItemEvent;
 
 import javax.swing.JComboBox;
 
+import markovchain.ui.GraphEditor.EdgeFactory;
+
 import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.visualization.MultiLayerTransformer;
@@ -31,13 +33,13 @@ import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
 public class CustomModalGraphMouse<V, E> extends AbstractModalGraphMouse implements ModalGraphMouse, ItemSelectable {
 
     protected Factory<V> vertexFactory;
-    protected Factory<E> edgeFactory;
+    protected EdgeFactory edgeFactory;
     protected CustomMousePlugin<V, E> editingPlugin;
     protected CustomEditingPopupMousePlugin<V, E> popupPlugin;
     protected MultiLayerTransformer basicTransformer;
     protected RenderContext<V, E> rc;
 
-    protected CustomModalGraphMouse(RenderContext<V, E> rc, Factory<V> vertexFactory, Factory<E> edgeFactory) {
+    protected CustomModalGraphMouse(RenderContext<V, E> rc, Factory<V> vertexFactory, EdgeFactory edgeFactory) {
         super(1.1f, 1 / 1.1f);
         // TODO Auto-generated constructor stub
         this.vertexFactory = vertexFactory;
@@ -60,7 +62,7 @@ public class CustomModalGraphMouse<V, E> extends AbstractModalGraphMouse impleme
         shearingPlugin = new ShearingGraphMousePlugin();
         pickingPlugin = new PickingGraphMousePlugin<V,E>();
 		animatedPickingPlugin = new AnimatedPickingGraphMousePlugin<V,E>();
-		popupPlugin = new CustomEditingPopupMousePlugin<>(vertexFactory, edgeFactory);
+		popupPlugin = (CustomEditingPopupMousePlugin<V, E>) new CustomEditingPopupMousePlugin<>(vertexFactory, edgeFactory);
         setMode(Mode.EDITING);
     }
 
@@ -103,10 +105,7 @@ public class CustomModalGraphMouse<V, E> extends AbstractModalGraphMouse impleme
     protected void setTransformingMode() {
         // TODO Auto-generated method stub
         super.setTransformingMode();
-        remove(editingPlugin);
-        remove(popupPlugin);
-        rc.getPickedVertexState().clear();
-        rc.getPickedEdgeState().clear();
+        setEditingMode();
     }
     
     @Override
@@ -119,7 +118,7 @@ public class CustomModalGraphMouse<V, E> extends AbstractModalGraphMouse impleme
     @Override
     public JComboBox getModeComboBox() {
         if (modeBox == null) {
-            modeBox = new JComboBox(new Mode[]{Mode.EDITING, Mode.TRANSFORMING, Mode.PICKING});
+            modeBox = new JComboBox(new Mode[]{Mode.EDITING});
             modeBox.addItemListener(getModeListener());
         }
         modeBox.setSelectedItem(mode);

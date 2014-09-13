@@ -163,6 +163,11 @@ public class GraphEditor extends JApplet {
             }
             return null;
         }
+        public Edge create(double num){
+        	if (num <= 0)
+        		return null;
+        	return new Edge(num);
+        }
     }
 
     public static Double showInputProbability(double value) {
@@ -385,4 +390,3 @@ public class GraphEditor extends JApplet {
         vv.repaint();
     }
 }
-
