@@ -155,37 +155,26 @@ public class MainFrame extends JRibbonFrame {
             try {
                 String name = showSaveNameDialog();
                 if (name != null) {
-                    UUID uuid = randomUUID(); 
-                    String path = "src/gallery/"+graphEditor.createImageGraph(graphEditor.graph)+".txt";
                     graphEditor.setCircleLayout();
-                    String link = graphEditor.createImageGraph(graphEditor.graph)+".png";
+                     try {
+                                Thread.sleep(500);                 
+                            } catch(InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                            }
+                    UUID uuid = randomUUID();
+                    BufferedImage image = graphEditor.createImageGraph(graphEditor.graph,uuid);
+                    String path = "src/gallery/"+uuid.toString()+".txt";
+                    String link = uuid.toString()+".png";
                     boolean rs = McGraph.save(graphEditor.graph, path);
-                    
-                         GalleryComponent compG = new GalleryComponent(link, path,name);
+
+                         GalleryComponent compG = new GalleryComponent(image,link, path,name);
+                         System.out.println("link:"+link);
                          listJlabelGallery.add(compG);
-                        
-                        
 
                     if (rs) {
                         f.addXML(name,link,path);
-                         preLoadGallery();
-                         try {
-                                Thread.sleep(500);                 
-                            } catch(InterruptedException ex) {
-                                Thread.currentThread().interrupt();
-                            }
                         showDialog("Save successfully");
-                         preLoadGallery();
-                        new Thread(new Runnable() {
-                            @Override public void run() {
-                                    preLoadGallery();
-                            }
-                        }).start();
-                        try {
-                                Thread.sleep(500);                 
-                            } catch(InterruptedException ex) {
-                                Thread.currentThread().interrupt();
-                            }
+                        
                     } else {
                         showErrorDialog("Save fail");
                     }

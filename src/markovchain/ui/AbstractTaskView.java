@@ -1,7 +1,9 @@
 package markovchain.ui;
 
 
+import gallery.Gallery;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.ButtonGroup;
@@ -18,7 +20,6 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
 import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
 import resources.Resources;
-import gallery.Gallery;
 /**
  *
  * @author Admin
@@ -38,13 +39,24 @@ public abstract class AbstractTaskView {
     public static ResizableIcon getResizableIconFromResource(String resource, int width, int height) {
         return ImageWrapperResizableIcon.getIcon(Resources.class.getResourceAsStream(resource), new Dimension(width, height));
     }
+   
     
     public static ResizableIcon getResizableIconFromGallery(String gallery) {
         return getResizableIconFromResource(gallery, 32, 32);
     }
-
+   
     public static ResizableIcon getResizableIconFromGallery(String gallery, int width, int height) {
         return ImageWrapperResizableIcon.getIcon(Gallery.class.getResourceAsStream(gallery), new Dimension(width, height));
+    }
+     // Image
+     public static ResizableIcon getResizableIconFromResource(BufferedImage image, int width, int height) {
+        return ImageWrapperResizableIcon.getIcon(image, new Dimension(width, height));
+    }
+    public static ResizableIcon getResizableIconFromGallery(BufferedImage image) {
+        return getResizableIconFromResource(image, 32, 32);
+    }
+    public static ResizableIcon getResizableIconFromGallery(BufferedImage image, int width, int height) {
+        return ImageWrapperResizableIcon.getIcon(image, new Dimension(width, height));
     }
     
     public JRibbonComponent createComponent(JComponent button) {
