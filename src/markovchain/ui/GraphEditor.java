@@ -118,10 +118,8 @@ public class GraphEditor extends JApplet {
         return gm;
     }
     
-    public String createImageGraph(McGraph graph){
+    public BufferedImage createImageGraph(McGraph graph,UUID uuid){
         
-                    UUID uuid = randomUUID(); 
-                    String path = "src/gallery/"+uuid.toString()+".txt";
                     VisualizationViewer vv = getVisualizationViewer();
                     VisualizationImageServer<Vertex, Edge> vis =
                     new VisualizationImageServer<Vertex, Edge>(vv.getGraphLayout(),
@@ -133,7 +131,7 @@ public class GraphEditor extends JApplet {
                 vis.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Vertex>());
                 vis.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
                 
-                Dimension d = new Dimension(750, 750);
+                Dimension d = new Dimension(vv.getGraphLayout().getSize());
                 BufferedImage image = (BufferedImage) vis.getImage(
                         new Point2D.Double(vv.getGraphLayout().getSize().getWidth()/2,
                                 vv.getGraphLayout().getSize().getHeight()/2),
@@ -142,8 +140,7 @@ public class GraphEditor extends JApplet {
                 try {
                          ImageIO.write(image, "png", new File("src/gallery/"+uuid.toString()+".png"));
                 }catch (IOException e) {}
-                
-             return uuid.toString();
+            return image;           
     }
     
     class VertexFactory implements Factory<Vertex> {

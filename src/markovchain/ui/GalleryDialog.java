@@ -163,7 +163,7 @@ public class GalleryDialog extends JDialog implements ActionListener {
                      e.setBorder(e.redline);
                      e.actif=true;
                      full.setIcon(e.iconLarge);
-                     
+                     //System.out.println(e.iconLarge.);
                 }
                 e.updateUI();
                      
