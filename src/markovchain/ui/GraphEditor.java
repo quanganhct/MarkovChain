@@ -138,7 +138,7 @@ public class GraphEditor extends JApplet {
                         d);
                 //new Dimension(vv.getGraphLayout().getSize())
                 try {
-                         ImageIO.write(image, "png", new File("src/gallery/"+uuid.toString()+".png"));
+                         ImageIO.write(image, "png", new File("gal/"+uuid.toString()+".png"));
                 }catch (IOException e) {}
             return image;           
     }

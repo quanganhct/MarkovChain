@@ -163,7 +163,7 @@ public class MainFrame extends JRibbonFrame {
                             }
                     UUID uuid = randomUUID();
                     BufferedImage image = graphEditor.createImageGraph(graphEditor.graph,uuid);
-                    String path = "src/gallery/"+uuid.toString()+".txt";
+                    String path = "gal/"+uuid.toString()+".txt";
                     String link = uuid.toString()+".png";
                     boolean rs = McGraph.save(graphEditor.graph, path);
 
