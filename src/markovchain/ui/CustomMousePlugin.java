@@ -77,19 +77,24 @@ public class CustomMousePlugin<V, E> extends EditingGraphMousePlugin<V, E> {
 					graph.removeVertex(vertex);
 					vv.repaint();
 				} else if (edge != null) {
-					E loop = graph.findEdge(graph.getSource(edge),
-							graph.getSource(edge));
-					if (loop == null) {
-						graph.addEdge((E) (new Edge(((Edge) edge).getValue())),
-								graph.getSource(edge), graph.getSource(edge));
+					if (!(graph.getSource(edge).equals(graph.getDest(edge)))) {
+						E loop = graph.findEdge(graph.getSource(edge),
+								graph.getSource(edge));
+						if (loop == null) {
+							graph.addEdge((E) (new Edge(((Edge) edge).getValue())),
+									graph.getSource(edge), graph.getSource(edge));
+						} else {
+							graph.removeEdge(loop);
+							graph.addEdge((E) (new Edge(((Edge) loop).getValue()
+									+ ((Edge) edge).getValue())),
+									graph.getSource(edge), graph.getSource(edge));
+						}
+						graph.removeEdge(edge);
+						vv.repaint();
 					} else {
-						graph.removeEdge(loop);
-						graph.addEdge((E) (new Edge(((Edge) loop).getValue()
-								+ ((Edge) edge).getValue())),
-								graph.getSource(edge), graph.getSource(edge));
+						JOptionPane.showMessageDialog(null,
+								"This edge can not be deleted");
 					}
-					graph.removeEdge(edge);
-					vv.repaint();
 				}
 			}
 		} else if (e.isControlDown()) {
