@@ -4,8 +4,13 @@ package markovchain.ui;
 import gallery.Gallery;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JRadioButton;
@@ -42,11 +47,18 @@ public abstract class AbstractTaskView {
    
     
     public static ResizableIcon getResizableIconFromGallery(String gallery) {
-        return getResizableIconFromResource(gallery, 32, 32);
+        return getResizableIconFromGallery(gallery, 32, 32);
     }
    
     public static ResizableIcon getResizableIconFromGallery(String gallery, int width, int height) {
-        return ImageWrapperResizableIcon.getIcon(Gallery.class.getResourceAsStream(gallery), new Dimension(width, height));
+        ResizableIcon result = null;
+        try {  
+            InputStream in = new FileInputStream(gallery);
+            result = ImageWrapperResizableIcon.getIcon(in, new Dimension(width, height));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(AbstractTaskView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
      // Image
      public static ResizableIcon getResizableIconFromResource(BufferedImage image, int width, int height) {

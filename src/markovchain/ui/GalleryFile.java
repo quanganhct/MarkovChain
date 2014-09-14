@@ -45,11 +45,25 @@ public class GalleryFile {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             doc = dBuilder.parse(fXmlFile);
             doc.getDocumentElement().normalize();
+            String path = fXmlFile.getAbsolutePath().replace("galleryFile.xml","");
             
           } catch (Exception e) {
             e.printStackTrace();
         }
          return doc;
+    }
+    
+    public String getAbsolutePath(){
+        String result ="";
+         try {
+ 
+            File fXmlFile = new File("gal/galleryFile.xml");
+            result = fXmlFile.getAbsolutePath().replace("galleryFile.xml","");
+            
+          } catch (Exception e) {
+            e.printStackTrace();
+        }
+         return result;
     }
     
     public List<GalleryComponent> getArray(){
@@ -129,9 +143,9 @@ public class GalleryFile {
 
                                 Element eElement = (Element) nNode;
                                 // Create Gallery Component from the XML data
-                                GalleryComponent g = new GalleryComponent(eElement.getElementsByTagName("picture").item(0).getTextContent(),eElement.getElementsByTagName("resource").item(0).getTextContent(),eElement.getElementsByTagName("title").item(0).getTextContent());
+                                GalleryComponent g = new GalleryComponent(this.getAbsolutePath()+eElement.getElementsByTagName("picture").item(0).getTextContent(),eElement.getElementsByTagName("resource").item(0).getTextContent(),eElement.getElementsByTagName("title").item(0).getTextContent());
                                 listJlabelGallery.add(g); 
-                                 System.out.println("\nCurrent pict :" + eElement.getElementsByTagName("picture").item(0).getTextContent());
+                                 System.out.println("\nCurrent pict :"+ this.getAbsolutePath() + eElement.getElementsByTagName("picture").item(0).getTextContent());
                         }
                 }
             }
