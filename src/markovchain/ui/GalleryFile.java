@@ -40,7 +40,7 @@ public class GalleryFile {
         Document doc = null;
          try {
  
-            File fXmlFile = new File("src/gallery/galleryFile.xml");
+            File fXmlFile = new File("gal/galleryFile.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             doc = dBuilder.parse(fXmlFile);
@@ -79,7 +79,7 @@ public class GalleryFile {
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(new File("src/gallery/galleryFile.xml"));
+		StreamResult result = new StreamResult(new File("gal/galleryFile.xml"));
 		transformer.transform(source, result);
             }
     }
@@ -107,7 +107,7 @@ public class GalleryFile {
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(new File("src/gallery/galleryFile.xml"));
+		StreamResult result = new StreamResult(new File("gal/galleryFile.xml"));
 		transformer.transform(source, result);
             }
     }
