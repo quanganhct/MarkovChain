@@ -15,6 +15,8 @@ import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 import javax.swing.JOptionPane;
 
@@ -179,10 +181,12 @@ public class CustomMousePlugin<V, E> extends EditingGraphMousePlugin<V, E> {
 						if (loop != null) {
 							double balance = ((Edge) loop).getValue()
 									- ((Edge) newEdge).getValue();
-							if (balance != ((Edge) loop).getValue()) {
+							BigDecimal bd = new BigDecimal(((Edge) loop).getValue(),MathContext.DECIMAL32);
+							bd = bd.subtract(new BigDecimal(((Edge) newEdge).getValue(),MathContext.DECIMAL32));
+							if (bd.doubleValue() != ((Edge) loop).getValue()) {
 								if (balance > 0) {
 									graph.removeEdge(loop);
-									graph.addEdge(((E) new Edge(balance)),
+									graph.addEdge(((E) new Edge(bd.doubleValue())),
 											this.startVertex, this.startVertex,
 											this.edgeIsDirected);
 									graph.addEdge(newEdge, this.startVertex,

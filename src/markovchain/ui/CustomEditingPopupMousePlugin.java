@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.EventObject;
 import java.util.Map;
+import java.math.BigDecimal;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -19,6 +20,8 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
+import java.math.BigInteger;
+import java.math.MathContext;
 
 public class CustomEditingPopupMousePlugin<V, E> extends
 		AbstractPopupGraphMousePlugin {
@@ -49,6 +52,11 @@ public class CustomEditingPopupMousePlugin<V, E> extends
 	private void editEdge(Graph<V, E> graph, E edge, Map<E, String> map,
 			double value) {
 		double balance = ((Edge) edge).getValue() - value;
+
+		BigDecimal bd = new BigDecimal(((Edge) edge).getValue(),
+				MathContext.DECIMAL32);
+		bd = bd.subtract(new BigDecimal(value, MathContext.DECIMAL32));
+		System.out.println("BD :" + bd.doubleValue() + " balance :" + balance);
 		E loop = graph.findEdge(graph.getSource(edge), graph.getSource(edge));
 		if (loop == null) {
 			if (balance > 0) {
@@ -65,10 +73,13 @@ public class CustomEditingPopupMousePlugin<V, E> extends
 			}
 		} else {
 			balance = balance + ((Edge) loop).getValue();
+
+			bd = bd.add(new BigDecimal(((Edge) loop).getValue(),
+					MathContext.DECIMAL32));
 			if (balance > 0) {
 				graph.removeEdge(loop);
-				graph.addEdge((E) (new Edge(balance)), graph.getSource(edge),
-						graph.getSource(edge));
+				graph.addEdge((E) (new Edge(bd.doubleValue())),
+						graph.getSource(edge), graph.getSource(edge));
 				map.put(edge, Double.toString(value));
 				if (edge instanceof Edge) {
 					((Edge) edge).setValue(value);
@@ -83,7 +94,8 @@ public class CustomEditingPopupMousePlugin<V, E> extends
 				JOptionPane.showMessageDialog(null,
 						"Total output of the vertex cannot be greater than 1");
 			}
-			System.out.println("Value:" + value + " ; Balance:" + balance);
+			System.out.println("Value:" + value + " ; Balance:" + balance
+					+ " BD:" + bd.doubleValue());
 		}
 	}
 
